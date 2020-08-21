@@ -1,0 +1,290 @@
+library(stringr)
+setwd("C:/Users/Srijit Mukherjee/Desktop")
+data = read.csv("Data.csv",  header = TRUE, stringsAsFactors = FALSE)
+data[,(ncol(data)+1):(ncol(data)+4)] = NA
+colnames(data)[(ncol(data)-3):ncol(data)] = c("Zero.Sum", "Social", "Conservatism", "Political.Belief")
+
+#filling up the ideology vector
+for (i in 1:nrow(data))
+{
+  
+  data$Zero.Sum[i] = data$Zero.Sum.1[i] + data$Zero.Sum.2[i]
+  data$Social[i] = data$Social.1[i] + data$Social.2[i]
+  data$Conservatism[i] = data$Conservatism.1[i] + data$Conservatism.2[i]
+  data$Political.Belief[i] = data$Political.Belief.1[i] + data$Political.Belief.2[i]
+  # if(data$Zero.Sum.1[i] + data$Zero.Sum.2[i] < 7)
+  #   data$Zero.Sum[i] =  c("Not High")
+  # else
+  #   data$Zero.Sum[i] = c("High")
+  # 
+  # if(data$Social.1[i] + data$Social.2[i] < 7)
+  #   data$Social[i] = c("Not High")
+  # else
+  #   data$Social[i] = c("High")
+  # 
+  # if(data$Conservatism.1[i] + data$Conservatism.2[i] < 7)
+  #   data$Conservatism[i] = c("Not High")
+  # else
+  #   data$Conservatism[i] = c("High")
+  # 
+  # if(data$Political.Belief.1[i] + data$Political.Belief.2[i] < 7)
+  #   data$Political.Belief[i] = c("Not High")
+  # else
+  #   data$Political.Belief[i] = c("High")
+}
+
+#deleting the irrelevant stuff
+
+data = data[-c(35:42)]
+ideology = data[,c((ncol(data)-3):ncol(data))]
+
+
+#Defence 
+
+defence = data[c(1,2,3:6,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+  
+  else
+  {
+    defence$Defence.Budget[i] = 0
+  }
+}
+  # 
+  # 
+  # if (defence$Defence.Absolute[i] == c("Yes"))
+  # {
+  #   #defence$Defence.Type[i] = c("Absolute")
+  #   extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+  #   extract = as.numeric(unlist(extract))
+  #   f = max(0,extract[2])
+  # }
+  # else
+  # {
+  #   defence$Defence.Absolute[i] = c("No")
+  # }
+  # 
+  # if (defence$Defence.Absolute[i] == c("No"))
+  # {
+  #   defence$Defence.Type[i] = c("Absolute")
+  #  e = 0
+  # }
+  # 
+  # if (defence$Defence.Low.Rank[i] == c("Yes"))
+  # {
+  #   #defence$Defence.Type[i] = c("Low Rank")
+  #   extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+  #   extract = as.numeric(unlist(extract))
+  #   d = max(0,extract[2])
+  # }
+  # else
+  # {
+  #   defence$Defence.Low.Rank[i] = c("No")
+  # }
+  # 
+  # 
+  # if (defence$Defence.Low.Rank[i] == c("No"))
+  # {
+  #   defence$Defence.Type[i] = c("Low Rank")
+  #   c = 0
+  # }
+  # 
+  # if (defence$Defence.High.Rank[i] == c("Yes"))
+  # {
+  #   #defence$Defence.Type[i] = c("High Rank")
+  #   extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+  #   extract = as.numeric(unlist(extract))
+  #   b = max(0,extract[2])
+  # }
+  # else
+  # {
+  #   defence$Defence.High.Rank[i] = c("No")
+  # }
+  # 
+  # if (defence$Defence.High.Rank[i] == c("No"))
+  # {
+  #   defence$Defence.Type[i] = c("High Rank")
+  #   a = 0
+  # }
+  # 
+  # defence$Defence.Budget[i] = max(a,b,c,d,e,f)
+
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defence)
+summary(model)
+
+
+#Medical 
+
+medical = data[c(1,2,7:10,35:38)]
+medical[medical==''] <- c("No")
+#medical[,(ncol(medical)+1)] = NA
+#colnames(medical)[(ncol(medical))] = c("Medical.Type")
+
+for (i in 1:nrow(medical))
+{
+  if ('Yes' %in% medical[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Medical.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Medical.Budget[i] = extract[2]
+  }
+
+
+medical[c(1,2,3:5,7:10)] = lapply((medical[c(1,2,3:5,7:10)]), factor)
+medical[6] = as.numeric(unlist(medical[6]))
+
+model = aov(Mefence.Budget ~ ., data = medical)
+summary(model)
+
+#Overseas 
+
+overseas = data[c(1,2,11:14,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defencedata)
+summary(model)
+
+#Immigration 
+
+immigration = data[c(1,2,15:18,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defencedata)
+summary(model)
+
+#Energy Production
+
+energyproduction = data[c(1,2,19:22,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defencedata)
+summary(model)
+
+#Taxation 
+
+taxation = data[c(1,2,23:26,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defencedata)
+summary(model)
+
+#Income Inequality
+
+incomeinequality = data[c(1,2,27:30,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defencedata)
+summary(model)
+
+# Foreign Born People
+
+foreignbornpeople = data[c(1,2,31:34,35:38)]
+defence[defence==''] <- c("No")
+#defence[,(ncol(defence)+1)] = NA
+#colnames(defence)[(ncol(defence))] = c("Defence.Type")
+
+for (i in 1:nrow(defence))
+{
+  if ('Yes' %in% defence[i,c(3:5)] == c("TRUE"))
+  {
+    extract = str_extract_all(defence$Defence.Budget[i], "\\d*\\d")
+    extract = as.numeric(unlist(extract))
+    defence$Defence.Budget[i] = extract[2]
+  }
+
+defence[c(1,2,3:5,7:10)] = lapply((defence[c(1,2,3:5,7:10)]), factor)
+defence[6] = as.numeric(unlist(defence[6]))
+
+model = aov(Defence.Budget ~ ., data = defencedata)
+summary(model)
+
+
+
+
+
+
